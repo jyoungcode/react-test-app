@@ -8,8 +8,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import CircularProgress from '@material-ui/core/CircularProgress';
 // css 불러오기
-import {withStyles} from '@material-ui/core/styles';
+// makeStyles : react-hooks에서 사용가능
+// import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   root: {
@@ -19,6 +22,9 @@ const styles = theme => ({
   },
   table: {
     minWidth: 1080
+  },
+  progress: {
+    margin: theme.spacing(2)
   }
 })
 
@@ -49,22 +55,44 @@ const styles = theme => ({
 // *Dummydata는 server.js로 옮김
 // const customers = []
 
+/* React Component Life Cycle
+  1. constructor()
+  2. componentWillMount()
+  3. render()
+  4. componentDidMount() 
+*/
+
+/* props or state가 변경될때는
+  shouldComponentUpdate()를 실행후 render()를 다시 실행
+*/
+
 class App extends Component {
   state = {
-    customers: ""
+    customers: "",
+    completed: 0
   }
 
   componentDidMount() {
+    this.timer = setInterval(this.progress, 20);
+
     // callApi가 body로 json을 받은 것이 promise기 때문에 then을 사용
-    this.callApi()
-      .then(res => this.setState({customers: res}))
-      .catch(err => console.log('err: ', err));
+    // progress를 테스트 하기 위해서 코드 잠깐 주석처리
+    // this.callApi()
+    //   .then(res => this.setState({customers: res}))
+    //   .catch(err => console.log('err: ', err));
   }
 
   callApi = async () => {
     const response = await fetch('/api/customers');
     const body = await response.json();
     return body;
+  }
+
+  // Material-ui를 docs를 잘 참고하자
+  // progress의 variant: determinate일때 사용
+  progress = () => {
+    const { completed } = this.state;
+    this.setState({ completed: completed >= 100 ? 0 : completed +1 });
   }
 
   render() {
@@ -107,7 +135,17 @@ class App extends Component {
                     job={c.job}
                   />
                 )
-              }) : ""
+              }) : 
+              <TableRow>
+                <TableCell colSpan="6" align="center">
+                  <CircularProgress 
+                    className={classes.progress}
+                    color="secondary"
+                    // variant="determinate" 
+                    // value={this.state.completed}
+                  />
+                </TableCell>
+              </TableRow>
             }
           </TableBody>
         </Table>
