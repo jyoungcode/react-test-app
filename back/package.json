@@ -1,12 +1,12 @@
 {
   "name": "management",
   "version": "1.0.0",
-  "description": "",
+  "description": "React and Express App",
   "main": "server.js",
   "scripts": {
-    "client": "cd front && npm start",
+    "client": "cd ../ && cd front && npm run start",
     "server": "nodemon server.js",
-    "dev": "concurrently --kill-others-on-fail \"npm server\" \"npm client\""
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "author": "",
   "license": "ISC",

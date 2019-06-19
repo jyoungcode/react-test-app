@@ -14,7 +14,7 @@ import {withStyles} from '@material-ui/core/styles';
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: "auto"
   },
   table: {
@@ -41,34 +41,32 @@ const styles = theme => ({
 // 사이트에서 example 코드 참고하자
 // https://material-ui.com/getting-started/installation/
 
-const customers = [
-  {
-    id: 1,
-    image: 'https://placeimg.com/64/64/any',
-    name: 'John',
-    birthday: '890424',
-    gender: 'man',
-    job: '학생'
-  },
-  {
-    id: 2,
-    image: 'https://placeimg.com/64/64/any',
-    name: 'Nana',
-    birthday: '890424',
-    gender: 'girl',
-    job: '학생'
-  },
-  {
-    id: 3,
-    image: 'https://placeimg.com/64/64/any',
-    name: 'Sara',
-    birthday: '890424',
-    gender: 'girl',
-    job: '학생'
-  },
-]
+/*
+  express로 backend 폴더 설정 후
+  front에서 backend를 받기 위해 비동기 통신, proxy설정(package.json) 해야함
+*/
+
+// *Dummydata는 server.js로 옮김
+// const customers = []
 
 class App extends Component {
+  state = {
+    customers: ""
+  }
+
+  componentDidMount() {
+    // callApi가 body로 json을 받은 것이 promise기 때문에 then을 사용
+    this.callApi()
+      .then(res => this.setState({customers: res}))
+      .catch(err => console.log('err: ', err));
+  }
+
+  callApi = async () => {
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  }
+
   render() {
     const {classes} = this.props;
     // console.log('classes: ', classes);
@@ -95,8 +93,9 @@ class App extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {
-              customers.map(c => {
+            {/* this.state is not function 오류에서 초기에 위에서 customers:""이면서 비동기데이터를 불러오기때문에 오류가 생김. 이것을 삼항연산자로 해결 */}
+            {this.state.customers ?
+              this.state.customers.map(c => {
                 return (
                   <Customer
                     key={c.id}
@@ -107,8 +106,8 @@ class App extends Component {
                     gender={c.gender}
                     job={c.job}
                   />
-                );
-              })
+                )
+              }) : ""
             }
           </TableBody>
         </Table>
