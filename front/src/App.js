@@ -77,9 +77,9 @@ class App extends Component {
 
     // callApi가 body로 json을 받은 것이 promise기 때문에 then을 사용
     // progress를 테스트 하기 위해서 코드 잠깐 주석처리
-    // this.callApi()
-    //   .then(res => this.setState({customers: res}))
-    //   .catch(err => console.log('err: ', err));
+    this.callApi()
+      .then(res => this.setState({customers: res}))
+      .catch(err => console.log('err: ', err));
   }
 
   callApi = async () => {

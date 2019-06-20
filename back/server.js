@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -5,12 +6,33 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+const data = fs.readFileSync('./database.json');
+const config = JSON.parse(data);
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: config.host,
+  user: config.user,
+  password: config.password,
+  port: config.port,
+  database: config.database
+});
+
+connection.connect();
+
+/* 주의!
+1. gitignore에 database 안올라가게 설정 (데이터베이스 id,pw 안올리게)
+2. database.json 생성
+*/
+
 // app.get('/api/hello', (req, res) => {
 //   res.send({ message: 'Hello Express!' });
 // });
 
 
 // https://jsonlint.com/
+// 하드코딩데이터
+/*
 app.get('/api/customers', (req, res) => {
   res.send([
     {
@@ -39,6 +61,15 @@ app.get('/api/customers', (req, res) => {
     }
   ]);
 });
+*/
 
+app.get('/api/customers', (req, res) => {
+  connection.query(
+    "SELECT * FROM CUSTOMER",
+    (err, rows, fields) => {
+      res.send(rows);
+    }
+  )
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
