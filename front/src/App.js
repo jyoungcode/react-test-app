@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Customer from './components/Customer';
+import CustomerAdd from './components/CustomerAdd';
 import './App.css';
 // Paper = Container 역할 
 import Paper from '@material-ui/core/Paper';
@@ -66,10 +67,29 @@ const styles = theme => ({
   shouldComponentUpdate()를 실행후 render()를 다시 실행
 */
 
+/*
+  서버와 통신하기 위해 axios 설치 (client)
+*/
+
 class App extends Component {
-  state = {
-    customers: "",
-    completed: 0
+  // state 초기화를 위해, upload 이후
+  constructor(props) {
+    super(props);
+    this.state = {
+      customers: "",
+      completed: 0
+    }
+  }
+
+  // 아래 tag에 props 넣어주기
+  stateRefresh = () => {
+    this.setState({
+      customers: "",
+      completed: 0
+    });
+    this.callApi()
+      .then(res => this.setState({ customers: res }))
+      .catch(err => console.log('err: ', err));
   }
 
   componentDidMount() {
@@ -98,58 +118,61 @@ class App extends Component {
   render() {
     const {classes} = this.props;
     // console.log('classes: ', classes);
-    return (   
-      <Paper className={classes.root}>
-        {/* map으로 대체하자 */}
-        {/* <Customer
-          id={customer[0].id}
-          image={customer.image} 
-          name={customer.name}
-          birthday={customer.birthday}
-          gender={customer.gender}
-          job={customer.job}
-        /> */}
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>번호</TableCell>
-              <TableCell>이미지</TableCell>
-              <TableCell>이름</TableCell>
-              <TableCell>생년월일</TableCell>
-              <TableCell>성별</TableCell>
-              <TableCell>직업</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* this.state is not function 오류에서 초기에 위에서 customers:""이면서 비동기데이터를 불러오기때문에 오류가 생김. 이것을 삼항연산자로 해결 */}
-            {this.state.customers ?
-              this.state.customers.map(c => {
-                return (
-                  <Customer
-                    key={c.id}
-                    id={c.id}
-                    image={c.image}
-                    name={c.name}
-                    birthday={c.birthday}
-                    gender={c.gender}
-                    job={c.job}
-                  />
-                )
-              }) : 
+    return (
+      <div>
+        <Paper className={classes.root}>
+          {/* map으로 대체하자 */}
+          {/* <Customer
+            id={customer[0].id}
+            image={customer.image} 
+            name={customer.name}
+            birthday={customer.birthday}
+            gender={customer.gender}
+            job={customer.job}
+          /> */}
+          <Table className={classes.table}>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan="6" align="center">
-                  <CircularProgress 
-                    className={classes.progress}
-                    color="secondary"
-                    // variant="determinate" 
-                    // value={this.state.completed}
-                  />
-                </TableCell>
+                <TableCell>번호</TableCell>
+                <TableCell>이미지</TableCell>
+                <TableCell>이름</TableCell>
+                <TableCell>생년월일</TableCell>
+                <TableCell>성별</TableCell>
+                <TableCell>직업</TableCell>
               </TableRow>
-            }
-          </TableBody>
-        </Table>
-      </Paper>
+            </TableHead>
+            <TableBody>
+              {/* this.state is not function 오류에서 초기에 위에서 customers:""이면서 비동기데이터를 불러오기때문에 오류가 생김. 이것을 삼항연산자로 해결 */}
+              {this.state.customers ?
+                this.state.customers.map(c => {
+                  return (
+                    <Customer
+                      key={c.id}
+                      id={c.id}
+                      image={c.image}
+                      name={c.name}
+                      birthday={c.birthday}
+                      gender={c.gender}
+                      job={c.job}
+                    />
+                  )
+                }) : 
+                <TableRow>
+                  <TableCell colSpan="6" align="center">
+                    <CircularProgress 
+                      className={classes.progress}
+                      color="secondary"
+                      // variant="determinate" 
+                      // value={this.state.completed}
+                    />
+                  </TableCell>
+                </TableRow>
+              }
+            </TableBody>
+          </Table>
+        </Paper>
+        <CustomerAdd stateRefresh={this.stateRefresh} />
+      </div>
     );
   }
 }
