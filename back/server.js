@@ -67,9 +67,10 @@ app.get('/api/customers', (req, res) => {
 });
 */
 
+// 여기서 SELETE * FROM CUSTOMER 대신 삭제되지 않은 데이터만 가져오기위해 isDeleted 추가
 app.get('/api/customers', (req, res) => {
   connection.query(
-    "SELECT * FROM CUSTOMER",
+    "SELECT * FROM CUSTOMER WHERE isDeleted = 0",
     (err, rows, fields) => {
       res.send(rows);
     }
@@ -83,7 +84,8 @@ app.use('/image', express.static('./upload'));
 // upload.single('image')는 image라는 데이터명을 받아온다는 뜻
 // **주의 : gitignore에 upload폴더 등록
 app.post('/api/customers', upload.single('image'), (req, res) => {
-  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+  // 삭제 되지 않은 상태 때문에 0 추가
+  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
   let image = '/image/' + req.file.filename;
   let name = req.body.name;
   let birthday = req.body.birthday;
@@ -94,5 +96,17 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
     res.send(rows);
   });
 });
+
+app.delete('/api/customers/:id', (req, res) => {
+  // 삭제되면 isDeleted = 1로 변경
+  // 데이터까지 삭제하고 싶으면 쿼리를 변경하자
+  // let sql = 'DELETE FROM CUSTOMER WHERE id=?;'
+  let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id =?';
+  let params = [req.params.id];
+  connection.query(sql, params, 
+    (err, rows, fields) => {
+      res.send(rows);
+    });
+})
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
