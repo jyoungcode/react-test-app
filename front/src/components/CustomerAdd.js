@@ -65,7 +65,12 @@ class CustomerAdd extends Component {
   // text 변경 시
   handleValueChange = (e) => {
     let nextState = {};
+    // 객체.prop = value
+    // nextState라는 객체에 {userName:"john"} 형태로 넣기 위해서. setState이기때문에 {}형태
     nextState[e.target.name] = e.target.value;
+    // console.log('e.target.name ', e.target.name);
+    // console.log('e.target.value ', e.target.value);
+    // console.log('nextState ', nextState);
     this.setState(nextState);
   }
 
@@ -116,7 +121,8 @@ class CustomerAdd extends Component {
           고객 추가하기
         </Button>
         {/* Button클릭시 open:true로 바뀌어서 Dialog가 열린다 */}
-        <Dialog open={this.state.open} onClose={this.handleClose}>
+        {/* <Dialog open={this.state.open} onClose={this.handleClose}> */}
+        <Dialog open={this.state.open}>
           <DialogTitle>고객 추가</DialogTitle>
           <DialogContent>
             {/* classes.hidden은 withStyles로 정의한거 */}

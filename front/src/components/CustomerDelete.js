@@ -49,7 +49,7 @@ export class CustomerDelete extends Component {
         >삭제</Button>
 
         <Dialog open={this.state.open} onClose={this.handleClose}>
-          <DialogTitle onClose={this.handleClose}>
+          <DialogTitle>
             삭제 경고
           </DialogTitle>
           <DialogContent>
